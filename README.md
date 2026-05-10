@@ -7,7 +7,7 @@ This is a Machine Learning classification project that predicts whether a person
 ## 🚀 Live Demo
 
 👉 Access the deployed app here:  
-https://mental-health-app.streamlit.app
+https://check-your-mental-health.streamlit.app/
 
 
 ##-----------------------------------------------------------------------------------
