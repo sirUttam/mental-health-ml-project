@@ -99,9 +99,11 @@ mental-health-project/
 # 🚀 How to Run
 
 # 1. Clone repo
-#bash
-git clone https://github.com/sirUttam/mental-health-project.git
-cd mental-health-project
+## bash
+
+git clone https://github.com/sirUttam/mental-health-ml-project.git
+
+cd mental-health-ml-project
 
 ##-----------------------------------------------------------------------------------
 
