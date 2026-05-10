@@ -108,11 +108,13 @@ cd mental-health-ml-project
 ##-----------------------------------------------------------------------------------
 
 Install dependencies
+
 pip install -r requirements.txt
 
 ##-----------------------------------------------------------------------------------
 
 Run app
+
 streamlit run app.py
 
 ##------------------------------------------------------------------------------------
@@ -120,6 +122,7 @@ streamlit run app.py
 ⚠️ Important Note
 
 This project is for educational and analytical purposes only.
+
 It is not a medical diagnosis tool.
 
 ##-----------------------------------------------------------------------------------
@@ -127,6 +130,7 @@ It is not a medical diagnosis tool.
 👨‍💻 Author
 
 Built by: Uttam Aryal
+
 Focus: Data Science | Machine Learning | Real-world Projects
 
 ##-----------------------------------------------------------------------------------
