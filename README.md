@@ -4,6 +4,14 @@ This is a Machine Learning classification project that predicts whether a person
 
 ##-----------------------------------------------------------------------------------
 
+## 🚀 Live Demo
+
+👉 Access the deployed app here:  
+https://mental-health-app.streamlit.app
+
+
+##-----------------------------------------------------------------------------------
+
 ## 🎯 Objective
 
 To predict **treatment (Yes/No)** using real-world mental health related features such as stress, habits, work interest, and social behavior.
