@@ -2,76 +2,145 @@ import os
 import streamlit as st
 import numpy as np
 import joblib
+from pathlib import Path
 
+# ---------------------------
+# PAGE CONFIG
+# ---------------------------
 st.set_page_config(
-    page_title="Mental Health Treatment Predictor",
+    page_title="Mental Health AI",
     page_icon="🧠",
-    layout="wide",
+    layout="centered",
 )
 
+# ---------------------------
+# GLASSMORPHISM + ANIMATION UI
+# ---------------------------
 st.markdown(
     """
     <style>
-    .main {background: linear-gradient(180deg, #f7fbff 0%, #e8f1ff 100%);}
-    .stButton>button {background-color: #0f4c81; color: white;}
-    .st-badge {background: #0f4c81; color: white;}
-    .title {font-size: 2.8rem; font-weight: 800; color: #0f4c81;}
-    .subtitle {font-size: 1.1rem; color: #334e68;}
-    .card {background: white; border-radius: 18px; padding: 20px; box-shadow: 0 12px 35px rgba(15, 76, 129, 0.12);}
+    .main {
+        background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+        background-size: 400% 400%;
+        animation: gradientBG 12s ease infinite;
+    }
+
+    @keyframes gradientBG {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+
+    .title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 8px;
+        text-shadow: 0px 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: #cbd5e1;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .fade-box {
+        text-align: center;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        color: #cbd5e1;
+        font-size: 0.95rem;
+
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeIn 1.2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+        margin-bottom: 18px;
+    }
+
+    .stButton>button {
+        width: 100%;
+        background: linear-gradient(135deg, #ff4d6d, #7c3aed);
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        transition: 0.3s ease;
+    }
+
+    .stButton>button:hover {
+        transform: scale(1.03);
+        box-shadow: 0px 0px 20px rgba(124, 58, 237, 0.6);
+    }
+
+    label, p {
+        color: #e2e8f0 !important;
+        font-weight: 500;
+    }
+
+    hr {
+        border: 1px solid rgba(255,255,255,0.1);
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+# ---------------------------
+# MODEL LOADING (Random Forest)
+# ---------------------------
 @st.cache_resource
 def load_model():
-    model_path = os.path.join("models", "Mental_Health_Project.pkl")
+    model_path = Path(__file__).parent / "models" / "mental_health(rf).pkl"
     return joblib.load(model_path)
 
 model = load_model()
 
+# ---------------------------
+# OPTIONS
+# ---------------------------
 GENDER_OPTIONS = ["Female", "Male"]
+
 COUNTRY_OPTIONS = [
-    "Australia",
-    "Belgium",
-    "Bosnia and Herzegovina",
-    "Brazil",
-    "Canada",
-    "Colombia",
-    "Costa Rica",
-    "Croatia",
-    "Czech Republic",
-    "Denmark",
-    "Finland",
-    "France",
-    "Georgia",
-    "Germany",
-    "Greece",
-    "India",
-    "Ireland",
-    "Israel",
-    "Italy",
-    "Mexico",
-    "Moldova",
-    "Netherlands",
-    "New Zealand",
-    "Nigeria",
-    "Philippines",
-    "Poland",
-    "Portugal",
-    "Russia",
-    "Singapore",
-    "South Africa",
-    "Sweden",
-    "Switzerland",
-    "Thailand",
-    "United Kingdom",
-    "United States",
+    "Australia","Belgium","Bosnia and Herzegovina","Brazil","Canada",
+    "Colombia","Costa Rica","Croatia","Czech Republic","Denmark",
+    "Finland","France","Georgia","Germany","Greece","India",
+    "Ireland","Israel","Italy","Mexico","Moldova","Netherlands",
+    "New Zealand","Nigeria","Philippines","Poland","Portugal",
+    "Russia","Singapore","South Africa","Sweden","Switzerland",
+    "Thailand","United Kingdom","United States"
 ]
+
 OCCUPATION_OPTIONS = ["Business", "Corporate", "Housewife", "Others", "Student"]
 YES_NO = ["No", "Yes"]
 MAYBE_NO_YES = ["Maybe", "No", "Yes"]
 MOOD_OPTIONS = ["High", "Low", "Medium"]
+
 DAYS_INDOORS_OPTIONS = [
     "Go out Every day",
     "1-14 days",
@@ -80,10 +149,13 @@ DAYS_INDOORS_OPTIONS = [
     "More than 2 months",
 ]
 
+# ---------------------------
+# ENCODING MAP
+# ---------------------------
 ENCODING_MAP = {
     "gender": {"Female": 0, "Male": 1},
-    "country": {value: idx for idx, value in enumerate(COUNTRY_OPTIONS)},
-    "occupation": {value: idx for idx, value in enumerate(OCCUPATION_OPTIONS)},
+    "country": {v: i for i, v in enumerate(COUNTRY_OPTIONS)},
+    "occupation": {v: i for i, v in enumerate(OCCUPATION_OPTIONS)},
     "self_employed": {"No": 0, "Yes": 1},
     "family_history": {"No": 0, "Yes": 1},
     "days_indoors": {
@@ -103,77 +175,74 @@ ENCODING_MAP = {
     "mental_health_interview": {"Maybe": 0, "No": 1, "Yes": 2},
     "care_options": {"No": 0, "Not sure": 1, "Yes": 2},
 }
-FEATURE_ORDER = [
-    "gender",
-    "country",
-    "occupation",
-    "self_employed",
-    "family_history",
-    "days_indoors",
-    "growing_stress",
-    "changes_habits",
-    "mental_health_history",
-    "mood_swings",
-    "coping_struggles",
-    "work_interest",
-    "social_weakness",
-    "mental_health_interview",
-    "care_options",
-]
 
-st.markdown("<div class='title'>Mental Health Treatment Predictor</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>Enter the profile details below and get a professional prediction from your trained model.</div>", unsafe_allow_html=True)
-st.write("---")
+FEATURE_ORDER = list(ENCODING_MAP.keys())
 
+# ---------------------------
+# HEADER
+# ---------------------------
+st.markdown("<div class='title'>🧠 Mental Health AI</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>AI-powered Random Forest prediction system</div>", unsafe_allow_html=True)
+
+# ---------------------------
+# INTRO BOX (ANIMATED)
+# ---------------------------
+st.markdown(
+    """
+    <div class="fade-box">
+        This system analyzes behavioral, lifestyle, and mental health indicators to estimate the likelihood of requiring mental health support.  
+        It is designed for awareness and educational purposes only.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# ---------------------------
+# FORM
+# ---------------------------
 with st.container():
-    left, right = st.columns([2, 1])
 
-    with left:
+    with st.container():
         st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.subheader("Profile Summary")
+        st.subheader("👤 Profile Information")
+
         gender = st.selectbox("Gender", GENDER_OPTIONS)
-        country = st.selectbox("Country", COUNTRY_OPTIONS, index=COUNTRY_OPTIONS.index("United States"))
+        country = st.selectbox("Country", COUNTRY_OPTIONS)
         occupation = st.selectbox("Occupation", OCCUPATION_OPTIONS)
         self_employed = st.selectbox("Self Employed", YES_NO)
-        family_history = st.selectbox("Family History of Mental Health", YES_NO)
+        family_history = st.selectbox("Family History", YES_NO)
+
         st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown("<div class='card' style='margin-top: 18px;'>", unsafe_allow_html=True)
-        st.subheader("Lifestyle & Wellbeing")
-        days_indoors = st.selectbox("Days Indoors", DAYS_INDOORS_OPTIONS)
-        growing_stress = st.selectbox("Growing Stress", MAYBE_NO_YES, index=0)
-        changes_habits = st.selectbox("Changes in Habits", MAYBE_NO_YES, index=0)
-        mental_health_history = st.selectbox("History of Mental Health Issues", MAYBE_NO_YES, index=0)
-        mood_swings = st.selectbox("Mood Swings", MOOD_OPTIONS, index=2)
-        coping_struggles = st.selectbox("Coping Struggles", YES_NO)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<div class='card' style='margin-top: 18px;'>", unsafe_allow_html=True)
-        st.subheader("Support & Interest")
-        work_interest = st.selectbox("Interest in Work", MAYBE_NO_YES, index=0)
-        social_weakness = st.selectbox("Social Weakness", MAYBE_NO_YES, index=0)
-        mental_health_interview = st.selectbox("Mental Health Interview Interest", MAYBE_NO_YES, index=0)
-        care_options = st.selectbox("Care Options Awareness", ["No", "Not sure", "Yes"], index=2)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with right:
+    with st.container():
         st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.markdown("### Model Overview")
-        st.write(
-            "This interface uses your trained Decision Tree model from `models/Mental_Health_Project.pkl`."
-        )
-        st.write("The model evaluates a complete mental health profile and estimates whether treatment is likely needed.")
-        st.markdown("<hr>")
-        st.write("**Input encoding rules:**")
-        st.write("- Gender and occupation are label encoded.")
-        st.write("- Days indoors uses an ordinal mapping from lowest to highest risk.")
-        st.write("- Categorical features use the same values from your training dataset.")
+        st.subheader("🧠 Mental Health Factors")
+
+        days_indoors = st.selectbox("Days Indoors", DAYS_INDOORS_OPTIONS)
+        growing_stress = st.selectbox("Growing Stress", MAYBE_NO_YES)
+        changes_habits = st.selectbox("Changes in Habits", MAYBE_NO_YES)
+        mental_health_history = st.selectbox("Mental Health History", MAYBE_NO_YES)
+        mood_swings = st.selectbox("Mood Swings", MOOD_OPTIONS)
+        coping_struggles = st.selectbox("Coping Struggles", YES_NO)
+
         st.markdown("</div>", unsafe_allow_html=True)
 
-prediction_button = st.button("Predict Treatment Need")
+    with st.container():
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.subheader("💼 Support & Awareness")
 
-def build_feature_vector():
-    user_input = {
+        work_interest = st.selectbox("Work Interest", MAYBE_NO_YES)
+        social_weakness = st.selectbox("Social Weakness", MAYBE_NO_YES)
+        mental_health_interview = st.selectbox("Interview Interest", MAYBE_NO_YES)
+        care_options = st.selectbox("Care Options", ["No", "Not sure", "Yes"])
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# ---------------------------
+# INPUT VECTOR
+# ---------------------------
+def build_input():
+    user_data = {
         "gender": gender,
         "country": country,
         "occupation": occupation,
@@ -190,36 +259,36 @@ def build_feature_vector():
         "mental_health_interview": mental_health_interview,
         "care_options": care_options,
     }
-    feature_vector = [ENCODING_MAP[name][user_input[name]] for name in FEATURE_ORDER]
-    return np.array(feature_vector).reshape(1, -1)
 
-if prediction_button:
-    input_vector = build_feature_vector()
-    prediction = model.predict(input_vector)[0]
-    probability = model.predict_proba(input_vector)[0]
-    score = float(np.max(probability) * 100)
-    label = "Treatment Needed" if prediction == 1 else "Treatment Not Needed"
-    color = "success" if prediction == 0 else "warning"
+    return np.array([ENCODING_MAP[f][user_data[f]] for f in FEATURE_ORDER]).reshape(1, -1)
 
-    st.write("---")
-    st.markdown(f"<div class='card' style='padding: 24px;'>", unsafe_allow_html=True)
-    st.markdown(f"### Prediction Result: {label}")
-    st.metric("Confidence", f"{score:.1f}%")
-    st.write(
-        "This prediction is based on your trained `Mental_Health_Project.pkl` model and the same preprocessing used during training."
-    )
-    st.markdown("</div>", unsafe_allow_html=True)
+# ---------------------------
+# PREDICTION
+# ---------------------------
+st.write("---")
+
+if st.button("🔍 Analyze Mental Health Risk"):
+
+    X = build_input()
+
+    prediction = model.predict(X)[0]
+
+    try:
+        prob = model.predict_proba(X)[0]
+        confidence = float(np.max(prob) * 100)
+    except:
+        confidence = 0.0
+
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.subheader("📊 Result")
 
     if prediction == 1:
-        st.warning(
-            "The model indicates a higher likelihood that the person may need mental health treatment. Use this as a supportive guide, not a diagnosis."
-        )
+        st.error("⚠ Higher likelihood of needing mental health support")
     else:
-        st.success(
-            "The model indicates a lower likelihood that mental health treatment is needed based on the provided profile."
-        )
+        st.success("✅ Lower likelihood of needing treatment")
 
-    if score > 80:
-        st.balloons()
+    st.metric("Confidence", f"{confidence:.2f}%")
+    st.markdown("</div>", unsafe_allow_html=True)
+
 else:
-    st.info("Fill in the details and click ‘Predict Treatment Need’ to see the result.")
+    st.info("Fill the form and click analyze to get prediction.")
